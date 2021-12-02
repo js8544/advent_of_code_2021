@@ -12,6 +12,7 @@ fn main() {
 struct Pos {
     horizontal: usize,
     depth: usize,
+    aim: usize,
 }
 
 enum Op {
@@ -35,19 +36,28 @@ fn run(ops: &Vec<Op>) -> Pos {
         Pos {
             horizontal: 0,
             depth: 0,
+            aim: 0,
         },
-        |pos, op| match op {
+        |Pos {
+             horizontal,
+             depth,
+             aim,
+         },
+         op| match op {
             Op::Forward(n) => Pos {
-                horizontal: pos.horizontal + n,
-                depth: pos.depth,
+                horizontal: horizontal + n,
+                depth: depth + aim * n,
+                aim: aim,
             },
             Op::Up(n) => Pos {
-                horizontal: pos.horizontal,
-                depth: pos.depth - n,
+                horizontal: horizontal,
+                depth: depth,
+                aim: aim - n,
             },
             Op::Down(n) => Pos {
-                horizontal: pos.horizontal,
-                depth: pos.depth + n,
+                horizontal: horizontal,
+                depth: depth,
+                aim: aim + n,
             },
         },
     )
