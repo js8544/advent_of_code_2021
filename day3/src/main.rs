@@ -1,6 +1,7 @@
 fn main() {
     let lines: Vec<&str> = include_str!("input.txt").lines().collect();
     part1(&lines);
+    part2(&lines);
 }
 
 fn part1(lines: &Vec<&str>) {
@@ -48,6 +49,58 @@ fn count_lines(lines: &Vec<&str>) -> Vec<[usize; 2]> {
         });
     });
     cnts
+}
+
+fn part2(lines_ori: &Vec<&str>) {
+    let line_len = lines_ori.first().unwrap().len();
+    lines_ori.iter().for_each(|line| {
+        assert_eq!(line.len(), line_len);
+    });
+
+    let mut lines = lines_ori.clone();
+    for i in 0..line_len {
+        // println!("index: {}, lines: {:?}", i, lines);
+        let counts = count_lines(&lines);
+        // println!("count: {:?}", counts);
+
+        lines = lines
+            .into_iter()
+            .filter(|&line| {
+                if line.as_bytes()[i] == b'0' {
+                    counts[i][0] > counts[i][1]
+                } else {
+                    counts[i][1] >= counts[i][0]
+                }
+            })
+            .collect();
+        // println!("res: {:?}", lines);
+        if lines.len() == 1 {
+            break;
+        }
+    }
+    assert_eq!(lines.len(), 1);
+    let oxygen = usize::from_str_radix(lines.first().unwrap(), 2).unwrap();
+
+    let mut lines = lines_ori.clone();
+    for i in 0..line_len {
+        let counts = count_lines(&lines);
+        lines = lines
+            .into_iter()
+            .filter(|&line| {
+                if line.as_bytes()[i] == b'0' {
+                    counts[i][0] <= counts[i][1]
+                } else {
+                    counts[i][1] < counts[i][0]
+                }
+            })
+            .collect();
+        if lines.len() == 1 {
+            break;
+        }
+    }
+    assert_eq!(lines.len(), 1);
+    let co2 = usize::from_str_radix(lines.first().unwrap(), 2).unwrap();
+    println!("oxygen: {}, co2: {}, ans: {}", oxygen, co2, oxygen * co2);
 }
 
 #[cfg(test)]
