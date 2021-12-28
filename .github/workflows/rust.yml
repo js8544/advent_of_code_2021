@@ -16,6 +16,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install latest nightly
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: nightly
+          override: true
+          components: rustc
     - name: Build
       run: for dir in day*; do cd $dir; cargo build --verbose; cd ..; done
     - name: Run tests
