@@ -2,8 +2,8 @@ use std::{collections::HashMap, mem::swap};
 
 #[derive(Debug, PartialEq, Clone, Copy, Eq, Hash, PartialOrd)]
 struct Point {
-    x: usize,
-    y: usize,
+    x: i64,
+    y: i64,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -14,7 +14,10 @@ struct Line {
 
 impl Line {
     fn is_straight(self: &Self) -> bool {
-        self.start.x == self.end.x || self.start.y == self.end.y
+        self.start.x == self.end.x
+            || self.start.y == self.end.y
+            || self.end.x - self.start.x == self.end.y - self.start.y
+            || self.end.x - self.start.x == self.start.y - self.end.y
     }
 }
 
@@ -45,13 +48,22 @@ impl Iterator for LineIterator {
     fn next(&mut self) -> Option<Point> {
         if self.cur <= self.line.end {
             let res = self.cur;
-            if self.cur.x < self.line.end.x {
+            if self.cur.x < self.line.end.x && self.cur.y < self.line.end.y {
+                // top right 45
                 self.cur.x += 1;
-                Some(res)
-            } else {
                 self.cur.y += 1;
-                Some(res)
+            } else if self.cur.x < self.line.end.x && self.cur.y > self.line.end.y {
+                // bottom right 45
+                self.cur.x += 1;
+                self.cur.y -= 1;
+            } else if self.cur.x < self.line.end.x {
+                // horizontal right
+                self.cur.x += 1;
+            } else {
+                // vertical up
+                self.cur.y += 1;
             }
+            Some(res)
         } else {
             None
         }
@@ -142,6 +154,18 @@ mod tests {
             end: Point { x: 5, y: 2 },
         };
         assert_eq!(line.is_straight(), false);
+
+        let line = Line {
+            start: Point { x: 3, y: 9 },
+            end: Point { x: 6, y: 6 },
+        };
+        assert_eq!(line.is_straight(), true);
+
+        let line = Line {
+            start: Point { x: 3, y: 9 },
+            end: Point { x: 6, y: 12 },
+        };
+        assert_eq!(line.is_straight(), true);
     }
 
     #[test]
@@ -155,6 +179,17 @@ mod tests {
         assert_eq!(iter.next(), Some(Point { x: 1, y: 9 }));
         assert_eq!(iter.next(), Some(Point { x: 2, y: 9 }));
         assert_eq!(iter.next(), Some(Point { x: 3, y: 9 }));
+        assert_eq!(iter.next(), None);
+
+        let line = Line {
+            start: Point { x: 3, y: 9 },
+            end: Point { x: 6, y: 6 },
+        };
+        let mut iter = line.into_iter();
+        assert_eq!(iter.next(), Some(Point { x: 3, y: 9 }));
+        assert_eq!(iter.next(), Some(Point { x: 4, y: 8 }));
+        assert_eq!(iter.next(), Some(Point { x: 5, y: 7 }));
+        assert_eq!(iter.next(), Some(Point { x: 6, y: 6 }));
         assert_eq!(iter.next(), None);
     }
 }
