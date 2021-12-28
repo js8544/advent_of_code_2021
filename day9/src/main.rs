@@ -1,5 +1,3 @@
-use std::cmp::Ordering;
-
 use itertools::Itertools;
 
 struct HeightMap {
