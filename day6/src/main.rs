@@ -4,13 +4,13 @@ fn main() {
         state[s.parse::<usize>().unwrap()] += 1;
     });
 
-    for _ in 0..80 {
+    for _ in 0..256 {
         run(&mut state);
     }
-    println!("state: {:?}, ans: {}", state, state.iter().sum::<i32>())
+    println!("state: {:?}, ans: {}", state, state.iter().sum::<u64>())
 }
 
-fn run(state: &mut [i32; 9]) {
+fn run(state: &mut [u64; 9]) {
     let mut new_state = [0; 9];
     new_state[8] = state[0];
     new_state[6] = state[0];
